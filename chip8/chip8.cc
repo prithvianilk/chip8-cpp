@@ -1,6 +1,8 @@
 #include "chip8.hh"
 using namespace std;
 
+// helpers
+
 // ref :- https://www.geeksforgeeks.org/program-decimal-hexadecimal-conversion/
 string opcode2hex(int opcode)
 {
@@ -70,11 +72,14 @@ Chip8::Chip8()
 
 	draw = 1;
 	for (int i = 0; i < HEIGHT * WIDTH; i++)
-		display[i] = 0;
+		display[i] = PIXEL_OFF;
 
 	// load font set
 	for (int i = 0; i < FONT_SET_SIZE; i++)
 		memory[i] = font_set[i];
+
+	delay_timer = 0;
+	sound_timer = 0;
 }
 
 // load ROM into chip8 memory
@@ -106,6 +111,8 @@ void Chip8::cycle()
 	uint16_t instruction = fetch();
 	display_opcode(instruction);
 	execute(instruction);
+	delay_timer = max(0, delay_timer - 1);
+	sound_timer = max(0, sound_timer - 1);
 }
 
 // fetches instruction from PC
@@ -135,7 +142,7 @@ void Chip8::execute(uint16_t instruction)
 				case 0xE0: {
 					draw = 1;
 					for (int i = 0; i < HEIGHT * WIDTH; i++)
-						display[i] = 0;
+						display[i] = PIXEL_OFF;
 				} break;
 				case 0xEE:
 					program_counter = stack_pop();
@@ -163,6 +170,8 @@ void Chip8::execute(uint16_t instruction)
 
 		// draw on screen
 		case 0xD: {
+			// set draw flag to true
+			draw = 1;
 			variable_register[0xF] = 0;
 			// for N rows
 			for (int dy = 0; dy < N; dy++) {
@@ -171,26 +180,19 @@ void Chip8::execute(uint16_t instruction)
 				// for each of the 8 pixels / bits in this sprite row
 				for (int dx = 0; dx < 8; dx++) {
 					// if the current pixel in the sprite row is on
-					if (sprite_data & (1 << dx)) {
+					if (sprite_data & (0x80 >> dx)) {
 						// set draw flag to true
-						draw = 1;
 						uint8_t x = (variable_register[X] + dx) % WIDTH,
 								y = (variable_register[Y] + dy) % HEIGHT;
 						// if the pixel at coordiates x, y on the screen is on
-						if (display[y * WIDTH + x] == 0xFF) {
+						if (display[y * WIDTH + x] == PIXEL_ON) {
 							// turn off the pixel and set VF to 1
-							display[y * WIDTH + x] = 0;
-							display[(y * WIDTH + x) + 1] = 0;
-							display[(y * WIDTH + x) + 2] = 0;
+							display[y * WIDTH + x] = PIXEL_OFF;
 							variable_register[0xF] = 1;
 						}
 						// or if the pixel is not on
-						else if (display[y * WIDTH + x] != 0xFF) {
-							//  draw the pixel at (x, y) coordinates
-							display[y * WIDTH + x] = 0xFF;
-							display[(y * WIDTH + x) + 1] = 0xFF;
-							display[(y * WIDTH + x) + 2] = 0xFF;
-						}
+						else if (display[y * WIDTH + x] != PIXEL_ON)
+							display[y * WIDTH + x] = PIXEL_ON;
 					}
 				}
 			}

@@ -5,6 +5,8 @@
 #define HEIGHT 32
 #define WIDTH 64
 #define START_ADDRESS 0x200
+#define PIXEL_ON 0xFFFFFFFF
+#define PIXEL_OFF 0xFF000000
 
 class Chip8 {
   private:
@@ -36,7 +38,7 @@ class Chip8 {
 	// draw flag
 	bool draw;
 	// display value [32px x 64px]
-	uint8_t display[HEIGHT * WIDTH * 3]; 
+	uint32_t display[HEIGHT * WIDTH]; 
 
 	// key flag
 	bool key;

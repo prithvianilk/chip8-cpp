@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define FPS 60
+#define FPS 300
 #define ESC_KEY 27
 #define SCALE 15
 
@@ -39,17 +39,18 @@ int main(int argc, char *argv[])
 							  HEIGHT * SCALE, // height
 							  SDL_WINDOW_RESIZABLE);
 	if (window == NULL) {
-		cout << SDL_GetError() << endl;
+		cerr << SDL_GetError() << endl;
 		return 0;
 	}
 
 	renderer = SDL_CreateRenderer(window, -1, 0);
-	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24,
+	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
 								SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
 
 	bool running = true;
 	chip8.load(argv[1]);
 	Uint32 starting_tick;
+	uint32_t pixels[2048];
 	SDL_Event event;
 
 	while (running) {
@@ -91,9 +92,9 @@ int main(int argc, char *argv[])
 		// draw to screen
 		if (chip8.draw) {
 			chip8.draw = 0;
-			SDL_UpdateTexture(texture, nullptr, chip8.display, WIDTH * 3);
+			SDL_UpdateTexture(texture, NULL, chip8.display, WIDTH * sizeof(uint32_t));
 			SDL_RenderClear(renderer);
-			SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+			SDL_RenderCopy(renderer, texture, NULL, NULL);
 			SDL_RenderPresent(renderer);
 		}
 
