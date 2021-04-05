@@ -1,14 +1,13 @@
 #include "SDL2/SDL.h"
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <ncurses.h>
 
 #include "chip8.cc"
 
 using namespace std;
 
-#define FPS 300
 #define ESC_KEY 27
 #define SCALE 15
 
@@ -22,13 +21,13 @@ map<int, int> key_map = {
 int main(int argc, char *argv[])
 {
 
-	if (argc != 2) {
-		cerr << "ROM Path not present in args" << endl;
+	if (argc != 3) {
+		cerr << "Error: 3 args must be provided:- "
+			 << "./CHIP8 <ROM_PATH> <FPS>" << endl;
 		return 1;
 	}
 
 	Chip8 chip8;
-
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer;
 	SDL_Texture *texture;
@@ -47,10 +46,10 @@ int main(int argc, char *argv[])
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
 								SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
 
-	bool running = true;
 	chip8.load(argv[1]);
+	bool running = true;
+	const int FPS = stoi(argv[2]);
 	Uint32 starting_tick;
-	uint32_t pixels[2048];
 	SDL_Event event;
 
 	while (running) {
@@ -87,12 +86,11 @@ int main(int argc, char *argv[])
 
 		chip8.cycle();
 
-		// TODO: add beep sound
-
 		// draw to screen
 		if (chip8.draw) {
 			chip8.draw = 0;
-			SDL_UpdateTexture(texture, NULL, chip8.display, WIDTH * sizeof(uint32_t));
+			SDL_UpdateTexture(texture, NULL, chip8.display,
+							  WIDTH * sizeof(uint32_t));
 			SDL_RenderClear(renderer);
 			SDL_RenderCopy(renderer, texture, NULL, NULL);
 			SDL_RenderPresent(renderer);

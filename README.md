@@ -1,4 +1,7 @@
-# A Chip-8 Emulator in C++
+# chip8-cpp
+A CHIP 8 emulator in C++
+No sound support
+
 
 ## Requirements
 - SDL 2
@@ -11,9 +14,9 @@
 ## To Run
 - `cd chip8`
 - ```g++ main.cc `pkg-config --cflags --libs sdl2` -o CHIP8```
-- `./CHIP8 <ROM_PATH>`
+- `./CHIP8 <ROM_PATH> <FPS>`
 
-## References
+## References / Help
 - https://tobiasvl.github.io/blog/write-a-chip-8-emulator/
 - https://austinmorlan.com/posts/chip8_emulator/
 - https://github.com/JamesGriffin/CHIP-8-Emulator/

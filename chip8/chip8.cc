@@ -28,16 +28,10 @@ string opcode2hex(int opcode)
 	return s;
 }
 
-void display_opcode(int opcode)
-{
-	string hex_opcode = opcode2hex(opcode);
-	cout << opcode << " [0x" << hex_opcode << "]" << endl;
-}
-
 void unknown_opcode(int opcode)
 {
 	string hex_opcode = opcode2hex(opcode);
-	cerr << "Invalid Opcode :- " << opcode << " [" << hex_opcode << "]" << endl;
+	cerr << "Invalid Opcode :- " << opcode << " [0x" << hex_opcode << "]" << endl;
 	exit(0);
 }
 
@@ -109,7 +103,6 @@ void Chip8::load(char *fpath)
 void Chip8::cycle()
 {
 	uint16_t instruction = fetch();
-	display_opcode(instruction);
 	execute(instruction);
 	delay_timer = max(0, delay_timer - 1);
 	sound_timer = max(0, sound_timer - 1);
