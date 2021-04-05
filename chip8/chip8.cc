@@ -174,7 +174,6 @@ void Chip8::execute(uint16_t instruction)
 				for (int dx = 0; dx < 8; dx++) {
 					// if the current pixel in the sprite row is on
 					if (sprite_data & (0x80 >> dx)) {
-						// set draw flag to true
 						uint8_t x = (variable_register[X] + dx) % WIDTH,
 								y = (variable_register[Y] + dy) % HEIGHT;
 						// if the pixel at coordiates x, y on the screen is on
