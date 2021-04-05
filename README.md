@@ -1,4 +1,7 @@
 # chip8-cpp
+![Pong](assets/pong.png "Pong")
+
+
 A CHIP 8 emulator in C++
 
 No sound support
